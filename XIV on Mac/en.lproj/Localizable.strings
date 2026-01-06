@@ -254,6 +254,8 @@ Do not enable this on non-retina displays, unless for screenshot purposes.";
 "SETTINGS_ADVANCED_ENCRYPT_ARGS" = "Encrypt Game Arguments";
 "SETTINGS_ADVANCED_AUTO_EXIT" = "Quit XIV on Mac upon game exit";
 "SETTINGS_ADVANCED_ERROR_EXIT" = "Warn if game exits with non-zero exit code";
+"SETTINGS_ADVANCED_MEDIA_FOUNDATION" = "Enable Media Foundation (WMV video support)";
+"SETTINGS_ADVANCED_MEDIA_FOUNDATION_HELP" = "Enables FFmpeg-based Media Foundation backend for WMV video playback. Required for 2.0 cutscene videos to play correctly. Disable this if you experience issues.";
 "SETTINGS_ADVANCED_WINE_DEBUG" = "Wine Debug:";
 
 // First Aid/Troubleshooting Window

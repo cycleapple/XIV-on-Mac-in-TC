@@ -347,4 +347,24 @@ public enum Settings {
             }
         }
     }
+
+    // Media Foundation settings for WMV video playback
+    private static let enableMediaFoundationKey = "EnableMediaFoundation"
+    static var enableMediaFoundation: Bool {
+        get {
+            // Default to true to enable WMV video playback for 2.0 cutscenes
+            Util.getSetting(settingKey: enableMediaFoundationKey, defaultValue: true)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: enableMediaFoundationKey)
+            // Apply the change immediately
+            DispatchQueue.global(qos: .utility).async {
+                if newValue {
+                    Wine.enableFFmpegMediaFoundation()
+                } else {
+                    Wine.disableFFmpegMediaFoundation()
+                }
+            }
+        }
+    }
 }

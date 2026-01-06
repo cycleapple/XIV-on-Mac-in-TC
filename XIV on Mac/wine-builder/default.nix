@@ -58,6 +58,19 @@ let
     buildInputs = [ target_sdk darwinMinVersionHook libiconv ];
     preConfigure =''export CFLAGS="-O3 -march=native -mno-avx"'';
   });
+  # FFmpeg for Wine Media Foundation backend (WMV video playback support)
+  ffmpeg = pkgs.ffmpeg.overrideAttrs (oldAttrs: {
+    buildInputs = map addDarwinDepsRecursive (oldAttrs.buildInputs or []) ++ [ target_sdk darwinMinVersionHook ];
+    # Use LGPL-only build to match Wine licensing
+    configureFlags = (oldAttrs.configureFlags or []) ++ [
+      "--enable-shared"
+      "--disable-static"
+      "--enable-lgpl"
+      "--disable-gpl"
+      "--disable-nonfree"
+    ];
+    preConfigure = ''export CFLAGS="-O3 -march=native -mno-avx"'';
+  });
 in
 pkgs.stdenv.mkDerivation rec {
   pname = "ff-wine";
@@ -87,7 +100,8 @@ pkgs.stdenv.mkDerivation rec {
     libiconv
     gettext
     SDL2
-  ] ++ 
+    ffmpeg  # FFmpeg for Media Foundation WMV support
+  ] ++
   map addDarwinDepsRecursive
   [
     pkgs.libinotify-kqueue
@@ -103,6 +117,8 @@ pkgs.stdenv.mkDerivation rec {
     export CROSSCFLAGS="-s -O3 -march=native -mno-avx"
     export ac_cv_lib_soname_vulkan=""
     export ac_cv_lib_soname_MoltenVK="libMoltenVK.dylib"
+    # Set FFmpeg paths for Media Foundation support
+    export PKG_CONFIG_PATH="${ffmpeg}/lib/pkgconfig:$PKG_CONFIG_PATH"
     $CC --version
   '';
 
@@ -148,6 +164,16 @@ pkgs.stdenv.mkDerivation rec {
 
   installPhase = ''
     make install-lib DESTDIR=${placeholder "out"} -j$NIX_BUILD_CORES
+  '';
+
+  # Copy FFmpeg libraries for Media Foundation WMV support
+  postInstall = ''
+    mkdir -p $out/lib/ffmpeg
+    cp -L ${ffmpeg}/lib/libavutil*.dylib $out/lib/ffmpeg/ || true
+    cp -L ${ffmpeg}/lib/libavcodec*.dylib $out/lib/ffmpeg/ || true
+    cp -L ${ffmpeg}/lib/libavformat*.dylib $out/lib/ffmpeg/ || true
+    cp -L ${ffmpeg}/lib/libswresample*.dylib $out/lib/ffmpeg/ || true
+    cp -L ${ffmpeg}/lib/libswscale*.dylib $out/lib/ffmpeg/ || true
   '';
 
   meta = {

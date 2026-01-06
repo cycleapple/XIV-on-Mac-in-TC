@@ -242,6 +242,8 @@
 "SETTINGS_ADVANCED_AUTO_EXIT" = "遊戲結束時自動關閉 XIV on Mac";
 "SETTINGS_ADVANCED_ERROR_EXIT" = "若遊戲以非零代碼結束時警告";
 "SETTINGS_ADVANCED_WINE_DEBUG" = "Wine 除錯：";
+"SETTINGS_ADVANCED_MEDIA_FOUNDATION" = "啟用 Media Foundation（WMV 影片支援）";
+"SETTINGS_ADVANCED_MEDIA_FOUNDATION_HELP" = "啟用基於 FFmpeg 的 Media Foundation 後端以支援 WMV 影片播放。2.0 版本的過場動畫需要此功能才能正常播放。如遇到問題請停用此選項。";
 
 // First Aid/Troubleshooting Window
 "FIRSTAID_WINDOW_TITLE" = "急救";

@@ -59,7 +59,43 @@ enum Wine {
             ensurePrefix()
             installFontIfNeeded()
             setLocaleToZhTW()
+            // Enable FFmpeg Media Foundation backend if setting is on
+            if Settings.enableMediaFoundation {
+                enableFFmpegMediaFoundation()
+            }
         }
+    }
+
+    /// Enable FFmpeg-based Media Foundation backend for WMV video playback
+    /// Wine 10.0+ includes winedmo.dll which provides FFmpeg MF support
+    static func enableFFmpegMediaFoundation() {
+        // Set registry key to enable FFmpeg MF backend instead of GStreamer
+        addReg(
+            key: "HKEY_CURRENT_USER\\Software\\Wine\\MediaFoundation",
+            value: "DisableGstByteStreamHandler",
+            data: "1"
+        )
+
+        // Set DYLD_LIBRARY_PATH to include bundled FFmpeg libraries
+        if let ffmpegPath = Bundle.main.url(forResource: "ffmpeg", withExtension: nil, subdirectory: "wine/lib")?.path {
+            let existingPath = ProcessInfo.processInfo.environment["DYLD_LIBRARY_PATH"] ?? ""
+            let newPath = existingPath.isEmpty ? ffmpegPath : "\(ffmpegPath):\(existingPath)"
+            addEnvironmentVariable("DYLD_LIBRARY_PATH", newPath)
+            Log.information("[Wine] FFmpeg Media Foundation enabled, library path: \(ffmpegPath)")
+        } else {
+            Log.warning("[Wine] FFmpeg libraries not found in bundle, Media Foundation may not work")
+        }
+    }
+
+    /// Disable FFmpeg Media Foundation backend
+    static func disableFFmpegMediaFoundation() {
+        // Remove the registry key to disable FFmpeg MF backend
+        addReg(
+            key: "HKEY_CURRENT_USER\\Software\\Wine\\MediaFoundation",
+            value: "DisableGstByteStreamHandler",
+            data: "0"
+        )
+        Log.information("[Wine] FFmpeg Media Foundation disabled")
     }
     
     /// 安裝 Sarasa Mono TC 字體到 Wine（如果尚未安裝）

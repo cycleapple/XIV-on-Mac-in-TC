@@ -60,6 +60,14 @@ struct SettingsAdvancedTabView: View {
                 Spacer()
             }
             HStack {
+                Toggle(isOn: $viewModel.enableMediaFoundation) {
+                    Text("SETTINGS_ADVANCED_MEDIA_FOUNDATION")
+                }
+                .padding(.leading)
+                .help("SETTINGS_ADVANCED_MEDIA_FOUNDATION_HELP")
+                Spacer()
+            }
+            HStack {
                 Text("SETTINGS_ADVANCED_WINE_DEBUG")
                     .padding(.leading)
                 TextField("", text: $viewModel.wineDebug)
@@ -104,6 +112,10 @@ extension SettingsAdvancedTabView {
 
         @Published var wineDebug: String = Wine.debug {
             didSet { Wine.debug = wineDebug }
+        }
+
+        @Published var enableMediaFoundation: Bool = Settings.enableMediaFoundation {
+            didSet { Settings.enableMediaFoundation = enableMediaFoundation }
         }
     }
 }
